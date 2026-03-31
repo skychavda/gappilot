@@ -3,7 +3,7 @@ import Stripe from 'stripe'
 import { createAdminClient } from '@/lib/supabase/admin'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-01-27.acacia' as const,
+  apiVersion: process.env.STRIPE_API_VERSION as any,
 })
 
 const priceToPlan: Record<string, 'solo' | 'growth' | 'agency'> = {

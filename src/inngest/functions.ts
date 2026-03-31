@@ -34,8 +34,8 @@ export const processTranscript = inngest.createFunction(
     id: 'process-transcript',
     name: 'Process Transcript',
     retries: 2,
+    triggers: [{ event: 'transcript/process' }],
   },
-  { event: 'transcript/process' },
   async ({ event, step }) => {
     const { transcriptId } = event.data as { transcriptId: string; userId: string }
     const supabase = createAdminClient()

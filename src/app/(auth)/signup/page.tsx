@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
@@ -32,6 +32,14 @@ const plans = [
 ]
 
 export default function SignUpPage() {
+  return (
+    <Suspense fallback={null}>
+      <SignUpForm />
+    </Suspense>
+  )
+}
+
+function SignUpForm() {
   const searchParams = useSearchParams()
   const initialPlan = searchParams.get('plan') ?? 'growth'
 

@@ -5,8 +5,11 @@ import { detectGaps } from '@/lib/anthropic'
 import type { Platform } from '@/types'
 
 export const processTranscript = inngest.createFunction(
-  { id: 'process-transcript', name: 'Process Transcript' },
-  { event: 'transcript/process' },
+  {
+    id: 'process-transcript',
+    name: 'Process Transcript',
+    triggers: [{ event: 'transcript/process' }],
+  },
   async ({ event, step }) => {
     const { transcriptId } = event.data as { transcriptId: string }
     const supabase = createAdminClient()

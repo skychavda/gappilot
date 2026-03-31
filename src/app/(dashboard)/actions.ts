@@ -207,7 +207,7 @@ export async function createBillingPortalSession(): Promise<{
   if (!profile?.stripe_customer_id) return { error: 'No billing account found. Contact support.' }
 
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: '2025-01-27.acacia' as const,
+    apiVersion: process.env.STRIPE_API_VERSION as any
   })
 
   const session = await stripe.billingPortal.sessions.create({
