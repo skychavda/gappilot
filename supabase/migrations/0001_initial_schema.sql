@@ -2,13 +2,12 @@
 -- GapPilot — Initial Schema
 -- ============================================================
 
--- Enable UUID extension
 create extension if not exists "pgcrypto";
 
 -- ============================================================
 -- PROFILES
 -- ============================================================
-create table public.profiles (
+create table if not exists public.profiles (
   id                      uuid primary key references auth.users(id) on delete cascade,
   created_at              timestamptz not null default now(),
   email                   text not null,
@@ -25,18 +24,18 @@ create table public.profiles (
 
 alter table public.profiles enable row level security;
 
-create policy "profiles: owner read"
+create policy if not exists "profiles: owner read"
   on public.profiles for select
   using (auth.uid() = id);
 
-create policy "profiles: owner update"
+create policy if not exists "profiles: owner update"
   on public.profiles for update
   using (auth.uid() = id);
 
 -- ============================================================
 -- PLATFORM CONNECTIONS
 -- ============================================================
-create table public.platform_connections (
+create table if not exists public.platform_connections (
   id              uuid primary key default gen_random_uuid(),
   created_at      timestamptz not null default now(),
   profile_id      uuid not null references public.profiles(id) on delete cascade,
@@ -49,14 +48,14 @@ create table public.platform_connections (
 
 alter table public.platform_connections enable row level security;
 
-create policy "platform_connections: owner all"
+create policy if not exists "platform_connections: owner all"
   on public.platform_connections for all
   using (auth.uid() = profile_id);
 
 -- ============================================================
 -- AGENTS
 -- ============================================================
-create table public.agents (
+create table if not exists public.agents (
   id                      uuid primary key default gen_random_uuid(),
   created_at              timestamptz not null default now(),
   profile_id              uuid not null references public.profiles(id) on delete cascade,
@@ -69,14 +68,14 @@ create table public.agents (
 
 alter table public.agents enable row level security;
 
-create policy "agents: owner all"
+create policy if not exists "agents: owner all"
   on public.agents for all
   using (auth.uid() = profile_id);
 
 -- ============================================================
 -- TRANSCRIPTS
 -- ============================================================
-create table public.transcripts (
+create table if not exists public.transcripts (
   id                uuid primary key default gen_random_uuid(),
   created_at        timestamptz not null default now(),
   profile_id        uuid not null references public.profiles(id) on delete cascade,
@@ -96,17 +95,17 @@ create table public.transcripts (
 
 alter table public.transcripts enable row level security;
 
-create policy "transcripts: owner all"
+create policy if not exists "transcripts: owner all"
   on public.transcripts for all
   using (auth.uid() = profile_id);
 
-create index transcripts_profile_id_created_at_idx on public.transcripts(profile_id, created_at desc);
-create index transcripts_status_idx on public.transcripts(status);
+create index if not exists transcripts_profile_id_created_at_idx on public.transcripts(profile_id, created_at desc);
+create index if not exists transcripts_status_idx on public.transcripts(status);
 
 -- ============================================================
 -- GAPS
 -- ============================================================
-create table public.gaps (
+create table if not exists public.gaps (
   id                  uuid primary key default gen_random_uuid(),
   created_at          timestamptz not null default now(),
   transcript_id       uuid not null references public.transcripts(id) on delete cascade,
@@ -127,17 +126,17 @@ create table public.gaps (
 
 alter table public.gaps enable row level security;
 
-create policy "gaps: owner all"
+create policy if not exists "gaps: owner all"
   on public.gaps for all
   using (auth.uid() = profile_id);
 
-create index gaps_profile_id_status_idx on public.gaps(profile_id, status);
-create index gaps_transcript_id_idx on public.gaps(transcript_id);
+create index if not exists gaps_profile_id_status_idx on public.gaps(profile_id, status);
+create index if not exists gaps_transcript_id_idx on public.gaps(transcript_id);
 
 -- ============================================================
 -- KB ENTRIES
 -- ============================================================
-create table public.kb_entries (
+create table if not exists public.kb_entries (
   id               uuid primary key default gen_random_uuid(),
   created_at       timestamptz not null default now(),
   profile_id       uuid not null references public.profiles(id) on delete cascade,
@@ -151,16 +150,16 @@ create table public.kb_entries (
 
 alter table public.kb_entries enable row level security;
 
-create policy "kb_entries: owner all"
+create policy if not exists "kb_entries: owner all"
   on public.kb_entries for all
   using (auth.uid() = profile_id);
 
-create index kb_entries_profile_id_idx on public.kb_entries(profile_id);
+create index if not exists kb_entries_profile_id_idx on public.kb_entries(profile_id);
 
 -- ============================================================
 -- EXPORTS (audit log — non-critical)
 -- ============================================================
-create table public.exports (
+create table if not exists public.exports (
   id           uuid primary key default gen_random_uuid(),
   created_at   timestamptz not null default now(),
   profile_id   uuid not null references public.profiles(id) on delete cascade,
@@ -171,34 +170,32 @@ create table public.exports (
 
 alter table public.exports enable row level security;
 
-create policy "exports: owner read"
+create policy if not exists "exports: owner read"
   on public.exports for select
   using (auth.uid() = profile_id);
 
 -- ============================================================
 -- STORAGE BUCKET
 -- ============================================================
--- Create the transcripts storage bucket (private)
 insert into storage.buckets (id, name, public)
 values ('transcripts', 'transcripts', false)
 on conflict (id) do nothing;
 
--- Only bucket owner can read/write their own files
-create policy "transcripts bucket: owner read"
+create policy if not exists "transcripts bucket: owner read"
   on storage.objects for select
   using (
     bucket_id = 'transcripts'
     and auth.uid()::text = (storage.foldername(name))[1]
   );
 
-create policy "transcripts bucket: owner insert"
+create policy if not exists "transcripts bucket: owner insert"
   on storage.objects for insert
   with check (
     bucket_id = 'transcripts'
     and auth.uid()::text = (storage.foldername(name))[1]
   );
 
-create policy "transcripts bucket: owner delete"
+create policy if not exists "transcripts bucket: owner delete"
   on storage.objects for delete
   using (
     bucket_id = 'transcripts'
@@ -207,7 +204,6 @@ create policy "transcripts bucket: owner delete"
 
 -- ============================================================
 -- FUNCTION: auto-create profile on auth.users insert
--- (fallback in case the app-level insert fails)
 -- ============================================================
 create or replace function public.handle_new_user()
 returns trigger
@@ -226,6 +222,7 @@ begin
 end;
 $$;
 
+drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
