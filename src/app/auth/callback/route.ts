@@ -52,5 +52,5 @@ export async function GET(request: NextRequest) {
     subscription_status: 'trialing',
   })
 
-  return NextResponse.redirect(`${origin}/dashboard/onboarding`)
+  return NextResponse.redirect(`${origin}/onboarding`)
 }

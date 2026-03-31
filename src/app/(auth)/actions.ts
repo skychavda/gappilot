@@ -48,7 +48,7 @@ export async function signUp(
   })
   if (profileError) return { error: 'Account created but profile setup failed. Contact support.' }
 
-  redirect('/dashboard/onboarding')
+  redirect('/onboarding')
 }
 
 export async function signOut(): Promise<void> {
