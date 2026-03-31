@@ -18,18 +18,21 @@ right answer, and lets the business approve new FAQ entries into their knowledge
 - Hosting: Vercel (deploy from GitHub)
 
 ## Project Structure
-/app                    → Next.js App Router pages
-/app/(marketing)        → Public pages: landing, pricing, about
-/app/(auth)             → Login, signup, reset password
-/app/(dashboard)        → Protected app: dashboard, gaps, settings, billing
-/app/api                → API routes: webhooks, transcript processing, AI
-/components/ui          → shadcn/ui base components
-/components/marketing   → Landing page sections
-/components/dashboard   → App-specific components
-/lib                    → Utilities, Supabase client, Anthropic client
-/lib/adapters           → Platform transcript normalizers
-/lib/prompts            → AI prompt templates
-/types                  → TypeScript types and interfaces
+All source code lives under /src — never create files at the project root outside of /src.
+
+/src/app                    → Next.js App Router pages
+/src/app/(marketing)        → Public pages: landing, pricing, about
+/src/app/(auth)             → Login, signup, reset password
+/src/app/(dashboard)        → Protected app: dashboard, gaps, settings, billing
+/src/app/api                → API routes: webhooks, transcript processing, AI
+/src/components/ui          → shadcn/ui base components
+/src/components/marketing   → Landing page sections
+/src/components/dashboard   → App-specific components
+/src/lib                    → Utilities, Supabase client, Anthropic client
+/src/lib/adapters           → Platform transcript normalizers
+/src/lib/prompts            → AI prompt templates
+/src/middleware.ts          → Next.js middleware (auth session + route protection)
+/src/types                  → TypeScript types and interfaces
 
 ## Commands
 - npm run dev           → Start dev server (port 3000)
@@ -42,7 +45,7 @@ right answer, and lets the business approve new FAQ entries into their knowledge
 - Named exports only (no default exports except pages)
 - Use Server Components by default, Client Components only when needed
 - All forms use react-hook-form + zod validation
-- Database access only via Supabase client in /lib/supabase
+- Database access only via Supabase client in /src/lib/supabase
 - Never commit .env.local
 - shadcn/ui components for all UI elements
 - Tailwind utility classes only, no custom CSS files
@@ -52,6 +55,7 @@ right answer, and lets the business approve new FAQ entries into their knowledge
 ## Environment Variables Required
 NEXT_PUBLIC_SUPABASE_URL
 NEXT_PUBLIC_SUPABASE_ANON_KEY
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY
 SUPABASE_SERVICE_ROLE_KEY
 ANTHROPIC_API_KEY
 STRIPE_SECRET_KEY
