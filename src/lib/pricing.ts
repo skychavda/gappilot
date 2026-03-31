@@ -1,3 +1,4 @@
+// ── Subscription plans ────────────────────────────────────────
 export const PLANS = {
   solo: {
     name: 'Solo',
@@ -38,3 +39,32 @@ export function getPlanCallLimit(tier: PlanKey): number {
 export function isUnlimited(tier: PlanKey): boolean {
   return PLANS[tier].calls >= 999999
 }
+
+// ── Credit packages (pay-per-use for starter tier) ────────────
+export const CREDIT_PACKAGES = {
+  starter_pack: {
+    name: 'Starter Pack',
+    credits: 25,
+    price: 9,
+    pricePerCredit: 0.36,
+    stripePriceId: process.env.STRIPE_PRICE_CREDITS_25!,
+  },
+  growth_pack: {
+    name: 'Growth Pack',
+    credits: 100,
+    price: 29,
+    pricePerCredit: 0.29,
+    stripePriceId: process.env.STRIPE_PRICE_CREDITS_100!,
+  },
+  pro_pack: {
+    name: 'Pro Pack',
+    credits: 250,
+    price: 59,
+    pricePerCredit: 0.24,
+    stripePriceId: process.env.STRIPE_PRICE_CREDITS_250!,
+  },
+} as const
+
+export type CreditPackageKey = keyof typeof CREDIT_PACKAGES
+
+export const FREE_STARTER_CREDITS = 15

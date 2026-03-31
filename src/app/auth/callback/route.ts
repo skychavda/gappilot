@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient, createAdminClient } from '@/lib/supabase/server'
 import { createStripeCustomer } from '@/lib/stripe'
+import { FREE_STARTER_CREDITS } from '@/lib/pricing'
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
-  const plan = searchParams.get('plan') ?? 'growth'
 
   if (!code) {
     return NextResponse.redirect(`${origin}/login?error=auth_callback_failed`)
@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(`${origin}/dashboard`)
   }
 
-  // New user — provision profile
+  // New user — provision profile on starter plan
   const email = data.user.email ?? ''
   const fullName =
     (data.user.user_metadata?.full_name as string | undefined) ??
@@ -48,8 +48,10 @@ export async function GET(request: NextRequest) {
     email,
     full_name: fullName,
     stripe_customer_id: stripeCustomerId,
-    subscription_tier: plan,
-    subscription_status: 'trialing',
+    subscription_tier: 'starter',
+    subscription_status: 'active',
+    trial_ends_at: null,
+    credits_balance: FREE_STARTER_CREDITS,
   })
 
   return NextResponse.redirect(`${origin}/onboarding`)

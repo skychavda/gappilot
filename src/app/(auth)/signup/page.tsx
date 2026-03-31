@@ -2,11 +2,10 @@
 
 import { Suspense, useState } from 'react'
 import Link from 'next/link'
-import { useSearchParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Eye, EyeOff, Loader2, Check } from 'lucide-react'
+import { Eye, EyeOff, Loader2, Zap } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { signUp, signInWithGoogle } from '../actions'
@@ -25,12 +24,6 @@ const schema = z
 
 type FormValues = z.infer<typeof schema>
 
-const plans = [
-  { id: 'solo', name: 'Solo', price: '$49/mo', description: '500 transcripts · 1 agent' },
-  { id: 'growth', name: 'Growth', price: '$149/mo', description: '2,000 transcripts · 5 agents', popular: true },
-  { id: 'agency', name: 'Agency', price: '$399/mo', description: 'Unlimited transcripts & agents' },
-]
-
 export default function SignUpPage() {
   return (
     <Suspense fallback={null}>
@@ -40,10 +33,6 @@ export default function SignUpPage() {
 }
 
 function SignUpForm() {
-  const searchParams = useSearchParams()
-  const initialPlan = searchParams.get('plan') ?? 'growth'
-
-  const [selectedPlan, setSelectedPlan] = useState(initialPlan)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -61,7 +50,6 @@ function SignUpForm() {
     formData.append('email', values.email)
     formData.append('password', values.password)
     formData.append('full_name', values.full_name)
-    formData.append('plan', selectedPlan)
     const result = await signUp(formData)
     if (result?.error) {
       setServerError(result.error)
@@ -72,7 +60,7 @@ function SignUpForm() {
   const handleGoogle = async () => {
     setGoogleLoading(true)
     setServerError(null)
-    const result = await signInWithGoogle(selectedPlan)
+    const result = await signInWithGoogle()
     if (result?.error) {
       setServerError(result.error)
       setGoogleLoading(false)
@@ -89,48 +77,24 @@ function SignUpForm() {
 
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
         <h1 className="text-xl font-bold text-slate-900 mb-1">Create your account</h1>
-        <p className="text-sm text-slate-500 mb-6">14-day free trial. No credit card required.</p>
+        <p className="text-sm text-slate-500 mb-5">Free to start. No credit card required.</p>
+
+        {/* Free credits callout */}
+        <div className="flex items-start gap-3 bg-teal-50 border border-teal-100 rounded-xl px-4 py-3 mb-6">
+          <Zap className="w-4 h-4 text-teal-600 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-semibold text-teal-800">15 free credits included</p>
+            <p className="text-xs text-teal-700 mt-0.5">
+              Each credit = 1 call analysed. Top up anytime, or upgrade to a subscription plan.
+            </p>
+          </div>
+        </div>
 
         {serverError && (
           <div className="mb-5 px-3 py-2.5 bg-red-50 border border-red-100 rounded-lg text-sm text-red-600">
             {serverError}
           </div>
         )}
-
-        {/* Plan selection */}
-        <div className="space-y-2 mb-5">
-          <p className="text-sm font-medium text-slate-700">Choose your plan</p>
-          <div className="grid grid-cols-3 gap-2">
-            {plans.map((plan) => (
-              <button
-                key={plan.id}
-                type="button"
-                onClick={() => setSelectedPlan(plan.id)}
-                className={`relative flex flex-col items-center text-center p-3 rounded-xl border-2 transition-all text-xs ${
-                  selectedPlan === plan.id
-                    ? 'border-teal-500 bg-teal-50 text-teal-700'
-                    : 'border-slate-200 text-slate-600 hover:border-slate-300'
-                }`}
-              >
-                {plan.popular && (
-                  <span className="absolute -top-2 left-1/2 -translate-x-1/2 bg-teal-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-semibold whitespace-nowrap">
-                    Popular
-                  </span>
-                )}
-                {selectedPlan === plan.id && (
-                  <Check className="w-3 h-3 absolute top-2 right-2 text-teal-600" />
-                )}
-                <span className="font-semibold mb-0.5">{plan.name}</span>
-                <span className={selectedPlan === plan.id ? 'text-teal-600' : 'text-slate-500'}>
-                  {plan.price}
-                </span>
-                <span className="text-[10px] mt-1 text-slate-400 leading-tight">
-                  {plan.description}
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
 
         {/* Google */}
         <button
@@ -241,7 +205,7 @@ function SignUpForm() {
             className="w-full bg-teal-600 hover:bg-teal-500 disabled:opacity-60 text-white font-semibold py-2.5 rounded-lg text-sm transition-colors flex items-center justify-center gap-2"
           >
             {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-            Start free trial
+            Get started free
           </button>
         </form>
 

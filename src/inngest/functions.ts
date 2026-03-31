@@ -69,6 +69,24 @@ export const processTranscript = inngest.createFunction(
       }
     })
 
+    // ── Step 1b: Credit gate for starter users ────────────────
+    await step.run('check-credits', async () => {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('subscription_tier, credits_balance')
+        .eq('id', transcript.profile_id)
+        .single()
+
+      const tier = (profile as { subscription_tier?: string } | null)?.subscription_tier
+      if (tier === 'starter') {
+        const balance = (profile as { credits_balance?: number } | null)?.credits_balance ?? 0
+        if (balance <= 0) {
+          throw new Error('No credits remaining. Please top up your credits to continue processing.')
+        }
+      }
+      return { ok: true }
+    })
+
     // Mark processing
     await step.run('mark-processing', async () => {
       await supabase
@@ -214,23 +232,31 @@ export const processTranscript = inngest.createFunction(
       if (error) throw new Error(`Failed to mark transcript complete: ${error.message}`)
     })
 
-    // ── Step 10: Increment user's monthly call counter ────────
-    await step.run('increment-monthly-usage', async () => {
+    // ── Step 10: Update usage counters ───────────────────────
+    await step.run('update-usage', async () => {
       const profileId = transcript.profile_id
 
-      // Read current counter, increment — non-fatal if this fails
       const { data: profile } = await supabase
         .from('profiles')
-        .select('calls_used_this_month')
+        .select('subscription_tier, calls_used_this_month, credits_balance')
         .eq('id', profileId)
         .single()
 
-      const current = (profile as { calls_used_this_month?: number } | null)?.calls_used_this_month ?? 0
+      const tier = (profile as { subscription_tier?: string } | null)?.subscription_tier
 
-      await supabase
-        .from('profiles')
-        .update({ calls_used_this_month: current + 1 } as Record<string, unknown>)
-        .eq('id', profileId)
+      if (tier === 'starter') {
+        const balance = (profile as { credits_balance?: number } | null)?.credits_balance ?? 0
+        await supabase
+          .from('profiles')
+          .update({ credits_balance: Math.max(0, balance - 1) } as Record<string, unknown>)
+          .eq('id', profileId)
+      } else {
+        const current = (profile as { calls_used_this_month?: number } | null)?.calls_used_this_month ?? 0
+        await supabase
+          .from('profiles')
+          .update({ calls_used_this_month: current + 1 } as Record<string, unknown>)
+          .eq('id', profileId)
+      }
     })
 
     return {

@@ -3,6 +3,7 @@
 import { createClient, createAdminClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { createStripeCustomer } from '@/lib/stripe'
+import { FREE_STARTER_CREDITS } from '@/lib/pricing'
 
 export async function signIn(
   formData: FormData
@@ -23,7 +24,6 @@ export async function signUp(
   const email = (formData.get('email') as string).trim()
   const password = formData.get('password') as string
   const fullName = (formData.get('full_name') as string).trim()
-  const plan = (formData.get('plan') as string) || 'solo'
 
   const supabase = await createClient()
   const { data, error } = await supabase.auth.signUp({ email, password })
@@ -43,8 +43,10 @@ export async function signUp(
     email,
     full_name: fullName,
     stripe_customer_id: stripeCustomerId,
-    subscription_tier: plan,
-    subscription_status: 'trialing',
+    subscription_tier: 'starter',
+    subscription_status: 'active',
+    trial_ends_at: null,
+    credits_balance: FREE_STARTER_CREDITS,
   })
   if (profileError) return { error: 'Account created but profile setup failed. Contact support.' }
 
@@ -57,11 +59,9 @@ export async function signOut(): Promise<void> {
   redirect('/')
 }
 
-export async function signInWithGoogle(plan?: string): Promise<{ error: string } | void> {
+export async function signInWithGoogle(): Promise<{ error: string } | void> {
   const supabase = await createClient()
-  const callbackUrl = plan
-    ? `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback?plan=${plan}`
-    : `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`
+  const callbackUrl = `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',

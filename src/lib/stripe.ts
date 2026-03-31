@@ -50,3 +50,23 @@ export async function createStripeCustomer(email: string, name?: string): Promis
   })
   return customer.id
 }
+
+export async function createCreditCheckoutSession(
+  userId: string,
+  priceId: string,
+  credits: number,
+  packageKey: string,
+  customerId: string,
+): Promise<string> {
+  const session = await stripe.checkout.sessions.create({
+    customer: customerId,
+    mode: 'payment',
+    line_items: [{ price: priceId, quantity: 1 }],
+    success_url: `${APP_URL}/billing?credits_added=1`,
+    cancel_url: `${APP_URL}/billing`,
+    metadata: { userId, credits: String(credits), packageKey, type: 'credit_purchase' },
+  })
+
+  if (!session.url) throw new Error('Stripe did not return a checkout URL')
+  return session.url
+}

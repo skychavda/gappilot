@@ -35,8 +35,9 @@ export interface Profile {
   avatar_url: string | null
   stripe_customer_id: string | null
   subscription_status: 'trialing' | 'active' | 'canceled' | 'past_due' | null
-  subscription_tier: 'solo' | 'growth' | 'agency' | null
+  subscription_tier: 'starter' | 'solo' | 'growth' | 'agency' | null
   trial_ends_at: string | null
+  credits_balance: number | null
 }
 
 export type Platform = 'elevenlabs' | 'retell' | 'vapi' | 'bland' | 'manual'
@@ -113,11 +114,21 @@ export interface KBEntry {
 }
 
 export interface PricingPlan {
-  id: 'solo' | 'growth' | 'agency'
+  id: 'starter' | 'solo' | 'growth' | 'agency'
   name: string
   price_monthly: number
-  stripe_price_id_monthly: string
+  stripe_price_id_monthly: string | null
   features: string[]
-  transcript_limit: number
+  transcript_limit: number | null
   agent_limit: number
+}
+
+export interface CreditPurchase {
+  id: string
+  created_at: string
+  profile_id: string
+  credits: number
+  amount_cents: number
+  stripe_session_id: string | null
+  package_key: string
 }

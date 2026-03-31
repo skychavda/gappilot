@@ -43,12 +43,45 @@ export async function POST(request: NextRequest) {
     switch (event.type) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session
+
+        // ── Credit top-up ──────────────────────────────────────
+        if (session.mode === 'payment' && session.metadata?.type === 'credit_purchase') {
+          const userId = session.metadata.userId
+          const credits = parseInt(session.metadata.credits ?? '0', 10)
+          const packageKey = session.metadata.packageKey ?? 'unknown'
+
+          if (userId && credits > 0) {
+            // Atomic increment
+            const { data: profile } = await supabase
+              .from('profiles')
+              .select('credits_balance')
+              .eq('id', userId)
+              .single()
+
+            const currentBalance = (profile as { credits_balance?: number } | null)?.credits_balance ?? 0
+
+            await supabase
+              .from('profiles')
+              .update({ credits_balance: currentBalance + credits })
+              .eq('id', userId)
+
+            await supabase.from('credit_purchases').insert({
+              profile_id: userId,
+              credits,
+              amount_cents: session.amount_total ?? 0,
+              stripe_session_id: session.id,
+              package_key: packageKey,
+            })
+          }
+          break
+        }
+
+        // ── Subscription checkout ──────────────────────────────
         if (session.mode !== 'subscription') break
 
         const customerId = session.customer as string
         const subscriptionId = session.subscription as string
 
-        // Fetch full subscription to get price/plan
         const subscription = await stripe.subscriptions.retrieve(subscriptionId)
         const plan = planFromSubscription(subscription)
 
