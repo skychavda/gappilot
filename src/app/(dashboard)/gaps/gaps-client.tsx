@@ -292,7 +292,7 @@ export function GapsClient({ gaps: initialGaps }: GapsClientProps) {
                   Upload a transcript to start detecting knowledge gaps in your agent.
                 </p>
                 <Link
-                  href="/dashboard/transcripts"
+                  href="/transcripts"
                   className="inline-flex items-center gap-2 bg-teal-600 hover:bg-teal-500 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors"
                 >
                   <Upload className="w-4 h-4" />

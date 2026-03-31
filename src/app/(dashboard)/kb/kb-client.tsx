@@ -148,7 +148,7 @@ export function KBClient({ entries: initialEntries }: KBClientProps) {
                   Review gaps and approve answers to build your knowledge base.
                 </p>
                 <Link
-                  href="/dashboard/gaps"
+                  href="/gaps"
                   className="inline-flex items-center gap-2 bg-teal-600 hover:bg-teal-500 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors"
                 >
                   Review gaps

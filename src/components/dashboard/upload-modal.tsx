@@ -623,7 +623,7 @@ export function UploadModal({ isOpen, onClose }: UploadModalProps) {
                     Done
                   </button>
                   <Link
-                    href="/dashboard/gaps"
+                    href="/gaps"
                     onClick={onClose}
                     className="flex-1 bg-teal-600 hover:bg-teal-500 text-white text-sm font-semibold py-2.5 rounded-xl transition-colors flex items-center justify-center gap-2"
                   >

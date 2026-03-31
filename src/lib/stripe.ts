@@ -20,8 +20,8 @@ export async function createCheckoutSession(
     customer: customerId,
     mode: 'subscription',
     line_items: [{ price: priceId, quantity: 1 }],
-    success_url: `${APP_URL}/dashboard/billing?success=1`,
-    cancel_url: `${APP_URL}/dashboard/billing?canceled=1`,
+    success_url: `${APP_URL}/billing?success=1`,
+    cancel_url: `${APP_URL}/billing?canceled=1`,
     subscription_data: {
       trial_period_days: 14,
       metadata: { userId },
@@ -37,7 +37,7 @@ export async function createCheckoutSession(
 export async function createCustomerPortalSession(customerId: string): Promise<string> {
   const session = await stripe.billingPortal.sessions.create({
     customer: customerId,
-    return_url: `${APP_URL}/dashboard/billing`,
+    return_url: `${APP_URL}/billing`,
   })
   return session.url
 }

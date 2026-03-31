@@ -120,7 +120,7 @@ export default async function DashboardPage() {
           <div className="flex items-center justify-between px-5 pt-5 pb-3 border-b border-slate-100">
             <h2 className="font-semibold text-slate-900 text-sm">Recent transcripts</h2>
             <Link
-              href="/dashboard/transcripts"
+              href="/transcripts"
               className="text-xs text-teal-600 hover:text-teal-700 font-medium flex items-center gap-0.5"
             >
               View all <ChevronRight className="w-3.5 h-3.5" />
@@ -131,7 +131,7 @@ export default async function DashboardPage() {
               recentTranscripts.map((t) => (
                 <Link
                   key={t.id}
-                  href={`/dashboard/transcripts/${t.id}`}
+                  href={`/transcripts/${t.id}`}
                   className="flex items-center gap-3 px-5 py-3 hover:bg-slate-50 transition-colors group"
                 >
                   <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -162,7 +162,7 @@ export default async function DashboardPage() {
               <div className="px-5 py-10 text-center">
                 <p className="text-sm text-slate-400">No transcripts yet.</p>
                 <Link
-                  href="/dashboard/transcripts"
+                  href="/transcripts"
                   className="mt-2 inline-block text-sm text-teal-600 hover:text-teal-700 font-medium"
                 >
                   Upload your first transcript →
@@ -179,7 +179,7 @@ export default async function DashboardPage() {
             <h2 className="font-semibold text-slate-900 text-sm mb-4">Quick actions</h2>
             <div className="space-y-2.5">
               <Link
-                href="/dashboard/transcripts"
+                href="/transcripts"
                 className="flex items-center gap-3 w-full bg-teal-600 hover:bg-teal-500 text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors"
               >
                 <Upload className="w-4 h-4" />
@@ -187,7 +187,7 @@ export default async function DashboardPage() {
               </Link>
               {(platformCount ?? 0) === 0 && (
                 <Link
-                  href="/dashboard/settings"
+                  href="/settings"
                   className="flex items-center gap-3 w-full border border-slate-200 hover:border-teal-300 hover:bg-teal-50 text-slate-700 hover:text-teal-700 px-4 py-2.5 rounded-xl text-sm font-medium transition-all"
                 >
                   <Plug className="w-4 h-4" />
@@ -195,7 +195,7 @@ export default async function DashboardPage() {
                 </Link>
               )}
               <Link
-                href="/dashboard/gaps"
+                href="/gaps"
                 className="flex items-center gap-3 w-full border border-slate-200 hover:bg-slate-50 text-slate-700 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors"
               >
                 <AlertTriangle className="w-4 h-4 text-amber-500" />
@@ -209,7 +209,7 @@ export default async function DashboardPage() {
             <div className="flex items-center justify-between px-5 pt-4 pb-3 border-b border-slate-100">
               <h2 className="font-semibold text-slate-900 text-sm">Recently approved</h2>
               <Link
-                href="/dashboard/kb"
+                href="/kb"
                 className="text-xs text-teal-600 hover:text-teal-700 font-medium flex items-center gap-0.5"
               >
                 KB <ChevronRight className="w-3.5 h-3.5" />

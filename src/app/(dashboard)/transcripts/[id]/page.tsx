@@ -71,7 +71,7 @@ export default async function TranscriptDetailPage({
       {/* Back + header */}
       <div>
         <Link
-          href="/dashboard/transcripts"
+          href="/transcripts"
           className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 mb-4 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
@@ -218,7 +218,7 @@ export default async function TranscriptDetailPage({
               </div>
               <div className="px-4 py-3 border-t border-slate-100 bg-slate-50">
                 <Link
-                  href={`/dashboard/gaps?transcript=${id}`}
+                  href={`/gaps?transcript=${id}`}
                   className="flex items-center justify-center gap-1.5 text-sm text-teal-600 hover:text-teal-700 font-medium"
                 >
                   Review all gaps

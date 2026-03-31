@@ -40,8 +40,8 @@ export async function approveGap(
     is_active: true,
   })
 
-  revalidatePath('/dashboard/gaps')
-  revalidatePath('/dashboard/kb')
+  revalidatePath('/gaps')
+  revalidatePath('/kb')
   return {}
 }
 
@@ -56,7 +56,7 @@ export async function skipGap(gapId: string): Promise<{ error?: string }> {
     .eq('id', gapId)
     .eq('profile_id', user.id)
 
-  revalidatePath('/dashboard/gaps')
+  revalidatePath('/gaps')
   return {}
 }
 
@@ -72,8 +72,8 @@ export async function undoGapAction(gapId: string): Promise<{ error?: string }> 
     .eq('id', gapId)
     .eq('profile_id', user.id)
 
-  revalidatePath('/dashboard/gaps')
-  revalidatePath('/dashboard/kb')
+  revalidatePath('/gaps')
+  revalidatePath('/kb')
   return {}
 }
 
@@ -100,7 +100,7 @@ export async function updateKBEntry(
     .eq('profile_id', user.id)
 
   if (error) return { error: error.message }
-  revalidatePath('/dashboard/kb')
+  revalidatePath('/kb')
   return {}
 }
 
@@ -110,7 +110,7 @@ export async function deleteKBEntry(entryId: string): Promise<{ error?: string }
   if (!user) return { error: 'Not authenticated' }
 
   await supabase.from('kb_entries').delete().eq('id', entryId).eq('profile_id', user.id)
-  revalidatePath('/dashboard/kb')
+  revalidatePath('/kb')
   return {}
 }
 
@@ -132,7 +132,7 @@ export async function updateProfile(
     .eq('id', user.id)
 
   if (error) return { error: error.message }
-  revalidatePath('/dashboard/settings')
+  revalidatePath('/settings')
   return {}
 }
 
@@ -154,7 +154,7 @@ export async function connectPlatform(
   })
 
   if (error) return { error: error.message }
-  revalidatePath('/dashboard/settings')
+  revalidatePath('/settings')
   return {}
 }
 
@@ -171,7 +171,7 @@ export async function disconnectPlatform(
     .eq('id', connectionId)
     .eq('profile_id', user.id)
 
-  revalidatePath('/dashboard/settings')
+  revalidatePath('/settings')
   return {}
 }
 
@@ -184,7 +184,7 @@ export async function updateNotificationSettings(
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Not authenticated' }
 
-  revalidatePath('/dashboard/settings')
+  revalidatePath('/settings')
   return {}
 }
 
@@ -212,7 +212,7 @@ export async function createBillingPortalSession(): Promise<{
 
   const session = await stripe.billingPortal.sessions.create({
     customer: profile.stripe_customer_id,
-    return_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/billing`,
+    return_url: `${process.env.NEXT_PUBLIC_APP_URL}/billing`,
   })
 
   return { url: session.url }

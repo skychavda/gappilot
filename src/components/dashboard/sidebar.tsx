@@ -14,11 +14,11 @@ import type { Profile } from '@/types'
 
 const navItems = [
   { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { label: 'Transcripts', href: '/dashboard/transcripts', icon: FileAudio },
-  { label: 'Gaps', href: '/dashboard/gaps', icon: AlertTriangle },
-  { label: 'Knowledge Base', href: '/dashboard/kb', icon: BookOpen },
-  { label: 'Settings', href: '/dashboard/settings', icon: Settings },
-  { label: 'Billing', href: '/dashboard/billing', icon: CreditCard },
+  { label: 'Transcripts', href: '/transcripts', icon: FileAudio },
+  { label: 'Gaps', href: '/gaps', icon: AlertTriangle },
+  { label: 'Knowledge Base', href: '/kb', icon: BookOpen },
+  { label: 'Settings', href: '/settings', icon: Settings },
+  { label: 'Billing', href: '/billing', icon: CreditCard },
 ]
 
 const mobileItems = navItems.slice(0, 5)

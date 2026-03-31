@@ -92,7 +92,7 @@ export function TranscriptsClient({ transcripts }: TranscriptsClientProps) {
                     <tr
                       key={t.id}
                       className="hover:bg-slate-50/50 transition-colors cursor-pointer group"
-                      onClick={() => router.push(`/dashboard/transcripts/${t.id}`)}
+                      onClick={() => router.push(`/transcripts/${t.id}`)}
                     >
                       <td className="px-5 py-3.5">
                         <p className="font-medium text-slate-800 truncate max-w-[160px]">

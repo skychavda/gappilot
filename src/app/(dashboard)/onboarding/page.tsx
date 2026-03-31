@@ -565,7 +565,7 @@ export default function OnboardingPage() {
                   <button
                     onClick={async () => {
                       await finishOnboarding()
-                      router.push('/dashboard/gaps')
+                      router.push('/gaps')
                     }}
                     className="w-full bg-teal-600 hover:bg-teal-500 text-white font-semibold text-sm py-3 rounded-xl transition-colors flex items-center justify-center gap-2 mb-3"
                   >

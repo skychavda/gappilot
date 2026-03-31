@@ -9,12 +9,12 @@ import { signOut } from '@/app/(auth)/actions'
 
 const routeTitles: Record<string, string> = {
   '/dashboard': 'Dashboard',
-  '/dashboard/transcripts': 'Transcripts',
-  '/dashboard/gaps': 'Gaps',
-  '/dashboard/kb': 'Knowledge Base',
-  '/dashboard/settings': 'Settings',
-  '/dashboard/billing': 'Billing',
-  '/dashboard/onboarding': 'Get started',
+  '/transcripts': 'Transcripts',
+  '/gaps': 'Gaps',
+  '/kb': 'Knowledge Base',
+  '/settings': 'Settings',
+  '/billing': 'Billing',
+  '/onboarding': 'Get started',
 }
 
 const planLimits: Record<string, number | null> = {
@@ -81,7 +81,7 @@ export function Header({ profile, transcriptCount }: HeaderProps) {
           </div>
           {usagePct >= 90 && (
             <Link
-              href="/dashboard/billing"
+              href="/billing"
               className="text-xs bg-red-50 text-red-600 border border-red-100 px-2 py-1 rounded-lg font-medium hover:bg-red-100 transition-colors whitespace-nowrap"
             >
               Upgrade
@@ -130,7 +130,7 @@ export function Header({ profile, transcriptCount }: HeaderProps) {
             </div>
 
             <Link
-              href="/dashboard/settings"
+              href="/settings"
               onClick={() => setDropdownOpen(false)}
               className="flex items-center gap-2.5 px-3 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors"
             >
@@ -138,7 +138,7 @@ export function Header({ profile, transcriptCount }: HeaderProps) {
               Profile
             </Link>
             <Link
-              href="/dashboard/billing"
+              href="/billing"
               onClick={() => setDropdownOpen(false)}
               className="flex items-center gap-2.5 px-3 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors"
             >
