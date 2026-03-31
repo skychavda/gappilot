@@ -24,11 +24,13 @@ create table if not exists public.profiles (
 
 alter table public.profiles enable row level security;
 
-create policy if not exists "profiles: owner read"
+drop policy if exists "profiles: owner read" on public.profiles;
+create policy "profiles: owner read"
   on public.profiles for select
   using (auth.uid() = id);
 
-create policy if not exists "profiles: owner update"
+drop policy if exists "profiles: owner update" on public.profiles;
+create policy "profiles: owner update"
   on public.profiles for update
   using (auth.uid() = id);
 
@@ -48,7 +50,8 @@ create table if not exists public.platform_connections (
 
 alter table public.platform_connections enable row level security;
 
-create policy if not exists "platform_connections: owner all"
+drop policy if exists "platform_connections: owner all" on public.platform_connections;
+create policy "platform_connections: owner all"
   on public.platform_connections for all
   using (auth.uid() = profile_id);
 
@@ -68,7 +71,8 @@ create table if not exists public.agents (
 
 alter table public.agents enable row level security;
 
-create policy if not exists "agents: owner all"
+drop policy if exists "agents: owner all" on public.agents;
+create policy "agents: owner all"
   on public.agents for all
   using (auth.uid() = profile_id);
 
@@ -95,7 +99,8 @@ create table if not exists public.transcripts (
 
 alter table public.transcripts enable row level security;
 
-create policy if not exists "transcripts: owner all"
+drop policy if exists "transcripts: owner all" on public.transcripts;
+create policy "transcripts: owner all"
   on public.transcripts for all
   using (auth.uid() = profile_id);
 
@@ -126,7 +131,8 @@ create table if not exists public.gaps (
 
 alter table public.gaps enable row level security;
 
-create policy if not exists "gaps: owner all"
+drop policy if exists "gaps: owner all" on public.gaps;
+create policy "gaps: owner all"
   on public.gaps for all
   using (auth.uid() = profile_id);
 
@@ -150,7 +156,8 @@ create table if not exists public.kb_entries (
 
 alter table public.kb_entries enable row level security;
 
-create policy if not exists "kb_entries: owner all"
+drop policy if exists "kb_entries: owner all" on public.kb_entries;
+create policy "kb_entries: owner all"
   on public.kb_entries for all
   using (auth.uid() = profile_id);
 
@@ -170,7 +177,8 @@ create table if not exists public.exports (
 
 alter table public.exports enable row level security;
 
-create policy if not exists "exports: owner read"
+drop policy if exists "exports: owner read" on public.exports;
+create policy "exports: owner read"
   on public.exports for select
   using (auth.uid() = profile_id);
 
@@ -181,21 +189,24 @@ insert into storage.buckets (id, name, public)
 values ('transcripts', 'transcripts', false)
 on conflict (id) do nothing;
 
-create policy if not exists "transcripts bucket: owner read"
+drop policy if exists "transcripts bucket: owner read" on storage.objects;
+create policy "transcripts bucket: owner read"
   on storage.objects for select
   using (
     bucket_id = 'transcripts'
     and auth.uid()::text = (storage.foldername(name))[1]
   );
 
-create policy if not exists "transcripts bucket: owner insert"
+drop policy if exists "transcripts bucket: owner insert" on storage.objects;
+create policy "transcripts bucket: owner insert"
   on storage.objects for insert
   with check (
     bucket_id = 'transcripts'
     and auth.uid()::text = (storage.foldername(name))[1]
   );
 
-create policy if not exists "transcripts bucket: owner delete"
+drop policy if exists "transcripts bucket: owner delete" on storage.objects;
+create policy "transcripts bucket: owner delete"
   on storage.objects for delete
   using (
     bucket_id = 'transcripts'
