@@ -2,10 +2,29 @@
 -- GapPilot — Starter plan & credits system
 -- ============================================================
 
--- Add 'starter' to subscription_tier constraint
-alter table public.profiles
-  drop constraint if exists profiles_subscription_tier_check;
+-- Drop ALL check constraints on subscription_tier (name varies by Postgres version)
+do $$
+declare
+  r record;
+begin
+  for r in
+    select con.conname
+    from pg_constraint con
+    join pg_class cls on cls.oid = con.conrelid
+    join pg_namespace ns on ns.oid = cls.relnamespace
+    join pg_attribute att on att.attrelid = con.conrelid
+    where ns.nspname = 'public'
+      and cls.relname = 'profiles'
+      and con.contype = 'c'
+      and att.attname = 'subscription_tier'
+      and att.attnum = any(con.conkey)
+  loop
+    execute format('alter table public.profiles drop constraint if exists %I', r.conname);
+  end loop;
+end
+$$;
 
+-- Re-add constraint with 'starter' included
 alter table public.profiles
   add constraint profiles_subscription_tier_check
   check (subscription_tier in ('starter', 'solo', 'growth', 'agency'));
@@ -18,13 +37,13 @@ alter table public.profiles
 -- CREDIT PURCHASES — audit log
 -- ============================================================
 create table if not exists public.credit_purchases (
-  id            uuid primary key default gen_random_uuid(),
-  created_at    timestamptz not null default now(),
-  profile_id    uuid not null references public.profiles(id) on delete cascade,
-  credits       integer not null,
-  amount_cents  integer not null,
+  id                uuid primary key default gen_random_uuid(),
+  created_at        timestamptz not null default now(),
+  profile_id        uuid not null references public.profiles(id) on delete cascade,
+  credits           integer not null,
+  amount_cents      integer not null,
   stripe_session_id text unique,
-  package_key   text not null
+  package_key       text not null
 );
 
 alter table public.credit_purchases enable row level security;
